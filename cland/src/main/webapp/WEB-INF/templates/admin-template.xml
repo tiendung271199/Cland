@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+       
+<tiles-definitions>
+  <definition name="template.admin" template="/WEB-INF/views/jsp/templates/admin.jsp">
+    <put-attribute name="header" value="/WEB-INF/views/jsp/components/admin/header.jsp" />
+    <put-attribute name="leftbar" value="/WEB-INF/views/jsp/components/admin/leftbar.jsp" />
+    <put-attribute name="body" value="" />
+    <put-attribute name="footer" value="/WEB-INF/views/jsp/components/admin/footer.jsp" />
+  </definition>
+  
+  <definition name="admin.index" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/index.jsp" />
+  </definition>
+  
+  <definition name="admin.cat" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/cat/index.jsp" />
+  </definition>
+  
+  <definition name="admin.cat.add" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/cat/add.jsp" />
+  </definition>
+  
+  <definition name="admin.cat.edit" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/cat/edit.jsp" />
+  </definition>
+  
+  <definition name="admin.land" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/land/index.jsp" />
+  </definition>
+  
+  <definition name="admin.land.add" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/land/add.jsp" />
+  </definition>
+  
+  <definition name="admin.land.edit" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/land/edit.jsp" />
+  </definition>
+  
+  <definition name="admin.contact" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/contact/index.jsp" />
+  </definition>
+  
+  <definition name="admin.user" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/user/index.jsp" />
+  </definition>
+  
+  <definition name="admin.user.add" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/user/add.jsp" />
+  </definition>
+  
+  <definition name="admin.user.edit" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/user/edit.jsp" />
+  </definition>
+  
+</tiles-definitions>
