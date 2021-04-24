@@ -66,15 +66,17 @@
 									<c:if test="${totalPage > 0}">
 									   <ul class="pagination">
 									   	  <c:if test="${currentPage > 1}">
-									      	<li><a href="${urlUser}/${currentPage - 1}" aria-label="Previous" ><span aria-hidden="true">«</span></a></li>
+									      	<li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${currentPage - 1}" aria-label="Previous" ><span aria-hidden="true">«</span></a></li>
 									      </c:if>
 									      
 									      <c:forEach begin="1" end="${totalPage}" var="page">
-									      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> ><a href="${urlUser}/${page}">${page}</a></li>
+									      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+									      	  	  <a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+									      	  </li>
 									      </c:forEach>
 									      
 									      <c:if test="${currentPage < totalPage}">
-									      	<li><a href="${urlUser}/${currentPage + 1}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+									      	<li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${currentPage + 1}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
 									      </c:if>
 									   </ul>
 									</c:if>

@@ -7,6 +7,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +23,7 @@ import edu.vinaenter.constant.GlobalConstant;
 import edu.vinaenter.constant.URLConstant;
 import edu.vinaenter.constant.ViewNameConstant;
 import edu.vinaenter.model.User;
+import edu.vinaenter.service.RoleService;
 import edu.vinaenter.service.UserService;
 import edu.vinaenter.util.PageUtil;
 
@@ -33,10 +35,16 @@ public class AdminUserController {
 	private MessageSource messageSource;
 
 	@Autowired
-	private UserService userService;
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}" })
-	public String index(@PathVariable(required = false) String page,
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private RoleService roleService;
+
+	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}", URLConstant.URL_EMPTY + "/{search}/{page}" })
+	public String index(@PathVariable(required = false) String page, @PathVariable(required = false) String search,
 			@RequestParam(required = false) String searchContent, Model model, RedirectAttributes ra) {
 		int currentPage = 1;
 		if (page != null) {
@@ -50,37 +58,45 @@ public class AdminUserController {
 				return "redirect:/" + URLConstant.URL_ADMIN_USER;
 			}
 		}
+		if (search != null) {
+			searchContent = search;
+		}
 		int offset = PageUtil.getOffset(currentPage);
 		int totalRow = userService.totalRow();
 		int totalPage = PageUtil.getTotalPage(totalRow);
-		model.addAttribute("currentPage", currentPage);
-		model.addAttribute("totalPage", totalPage);
 		List<User> userList = userService.getList(offset, GlobalConstant.TOTAL_ROW);
 		if (searchContent != null) {
 			model.addAttribute("searchContent", searchContent);
-			userList = userService.search(searchContent);
+			totalRow = userService.totalRowSearch(searchContent);
+			totalPage = PageUtil.getTotalPage(totalRow);
+			userList = userService.search(searchContent, offset, GlobalConstant.TOTAL_ROW);
 		}
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("userList", userList);
 		return ViewNameConstant.VIEW_ADMIN_USER;
 	}
 
 	@GetMapping(URLConstant.URL_ADMIN_ADD)
-	public String add() {
+	public String add(Model model) {
+		model.addAttribute("roleList", roleService.getAll());
 		return ViewNameConstant.VIEW_ADMIN_USER_ADD;
 	}
 
 	@PostMapping(URLConstant.URL_ADMIN_ADD)
 	public String add(@Valid @ModelAttribute("userError") User user, BindingResult rs, RedirectAttributes ra,
 			Model model) {
+		model.addAttribute("roleList", roleService.getAll());
+		model.addAttribute("objUser", user);
 		if (rs.hasErrors()) {
-			model.addAttribute("objUser", user);
 			return ViewNameConstant.VIEW_ADMIN_USER_ADD;
 		}
 		if (userService.checkUsername(user.getUsername()) != null) {
 			model.addAttribute("uError", messageSource.getMessage("loopError", null, Locale.getDefault()));
 			return ViewNameConstant.VIEW_ADMIN_USER_ADD;
 		}
-		if (userService.save(user) > 0) {
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+		if (userService.save2(user) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("addSuccess", null, Locale.getDefault()));
 		} else {
 			ra.addFlashAttribute("userError", messageSource.getMessage("error", null, Locale.getDefault()));
@@ -88,9 +104,19 @@ public class AdminUserController {
 		return "redirect:/" + URLConstant.URL_ADMIN_USER;
 	}
 
-	@GetMapping(URLConstant.URL_ADMIN_EDIT + "/{id}")
-	public String edit(@PathVariable int id, Model model) {
-		User objUser = userService.findById(id);
+	@GetMapping(URLConstant.URL_ADMIN_EDIT)
+	public String edit(@PathVariable String id, Model model, RedirectAttributes ra) {
+		int userId = 0;
+		try {
+			userId = Integer.parseInt(id);
+			if (userId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("userError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_ADMIN_USER;
+		}
+		User objUser = userService.findById(userId);
 		model.addAttribute("objUser", objUser);
 		return ViewNameConstant.VIEW_ADMIN_USER_EDIT;
 	}
@@ -98,10 +124,18 @@ public class AdminUserController {
 	@PostMapping(URLConstant.URL_ADMIN_EDIT)
 	public String edit(@Valid @ModelAttribute("userError") User user, BindingResult rs, Model model,
 			RedirectAttributes ra) {
+		model.addAttribute("objUser", user);
 		if (rs.hasErrors()) {
-			model.addAttribute("objUser", user);
 			return ViewNameConstant.VIEW_ADMIN_USER_EDIT;
 		}
+		if (userService.checkUsername(user.getUsername()) != null) {
+			User objUser = userService.checkUsername(user.getUsername());
+			if (objUser.getId() != user.getId()) {
+				model.addAttribute("uError", messageSource.getMessage("loopError", null, Locale.getDefault()));
+				return ViewNameConstant.VIEW_ADMIN_USER_EDIT;
+			}
+		}
+		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		if (userService.update(user) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("editSuccess", null, Locale.getDefault()));
 		} else {
@@ -110,9 +144,19 @@ public class AdminUserController {
 		return "redirect:/" + URLConstant.URL_ADMIN_USER;
 	}
 
-	@GetMapping(URLConstant.URL_ADMIN_DELETE + "/{id}")
-	public String delete(@PathVariable int id, Model model, RedirectAttributes ra) {
-		if (userService.del(id) > 0) {
+	@GetMapping(URLConstant.URL_ADMIN_DELETE)
+	public String delete(@PathVariable String id, Model model, RedirectAttributes ra) {
+		int userId = 0;
+		try {
+			userId = Integer.parseInt(id);
+			if (userId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("userError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_ADMIN_USER;
+		}
+		if (userService.del(userId) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("deleteSuccess", null, Locale.getDefault()));
 		} else {
 			ra.addFlashAttribute("catError", messageSource.getMessage("error", null, Locale.getDefault()));

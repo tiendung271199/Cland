@@ -30,8 +30,8 @@ public class AdminContactController {
 	@Autowired
 	private ContactService contactService;
 
-	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}" })
-	public String index(@PathVariable(required = false) String page,
+	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}", URLConstant.URL_EMPTY + "/{search}/{page}" })
+	public String index(@PathVariable(required = false) String page, @PathVariable(required = false) String search,
 			@RequestParam(required = false) String searchContent, Model model, RedirectAttributes ra) {
 		int currentPage = 1;
 		if (page != null) {
@@ -45,23 +45,38 @@ public class AdminContactController {
 				return "redirect:/" + URLConstant.URL_ADMIN_CONTACT;
 			}
 		}
+		if (search != null) {
+			searchContent = search;
+		}
 		int offset = PageUtil.getOffset(currentPage);
 		int totalRow = contactService.totalRow();
 		int totalPage = PageUtil.getTotalPage(totalRow);
-		model.addAttribute("currentPage", currentPage);
-		model.addAttribute("totalPage", totalPage);
 		List<Contact> contactList = contactService.getList(offset, GlobalConstant.TOTAL_ROW);
 		if (searchContent != null) {
 			model.addAttribute("searchContent", searchContent);
-			contactList = contactService.search(searchContent);
+			totalRow = contactService.totalRowSearch(searchContent);
+			totalPage = PageUtil.getTotalPage(totalRow);
+			contactList = contactService.search(searchContent, offset, GlobalConstant.TOTAL_ROW);
 		}
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("contactList", contactList);
 		return ViewNameConstant.VIEW_ADMIN_CONTACT;
 	}
 
-	@GetMapping(URLConstant.URL_ADMIN_DELETE + "/{id}")
-	public String delete(@PathVariable int id, Model model, RedirectAttributes ra) {
-		if (contactService.del(id) > 0) {
+	@GetMapping(URLConstant.URL_ADMIN_DELETE)
+	public String delete(@PathVariable String id, Model model, RedirectAttributes ra) {
+		int contactId = 0;
+		try {
+			contactId = Integer.parseInt(id);
+			if (contactId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("contactError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_ADMIN_CONTACT;
+		}
+		if (contactService.del(contactId) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("deleteSuccess", null, Locale.getDefault()));
 		} else {
 			ra.addFlashAttribute("contactError", messageSource.getMessage("error", null, Locale.getDefault()));

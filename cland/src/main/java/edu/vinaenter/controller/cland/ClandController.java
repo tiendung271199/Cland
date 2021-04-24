@@ -28,7 +28,6 @@ import edu.vinaenter.service.ContactService;
 import edu.vinaenter.service.LandService;
 import edu.vinaenter.util.LandUtil;
 import edu.vinaenter.util.PageUtil;
-import edu.vinaenter.util.StringUtil;
 
 @Controller
 public class ClandController {
@@ -73,9 +72,9 @@ public class ClandController {
 		return ViewNameConstant.VIEW_CLAND;
 	}
 
-	@GetMapping({ URLConstant.URL_CLAND_CAT + "/{cname}/{cid}", URLConstant.URL_CLAND_CAT + "/{cname}/{cid}/{page}" })
-	public String cat(@PathVariable(required = false) String page, @PathVariable String cid, @PathVariable String cname,
-			Model model, RedirectAttributes ra) {
+	@GetMapping({ URLConstant.URL_CLAND_CAT, URLConstant.URL_CLAND_CAT + "/{page}" })
+	public String cat(@PathVariable(required = false) String page, @PathVariable String cid, Model model,
+			RedirectAttributes ra) {
 		List<Category> catList = categoryService.getAll2();
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
@@ -87,9 +86,6 @@ public class ClandController {
 			catID = Integer.parseInt(cid);
 			objCat = categoryService.findById(catID);
 			if (objCat == null) {
-				throw new Exception();
-			}
-			if (!cname.equals(StringUtil.makeSlug(objCat.getCname()))) {
 				throw new Exception();
 			}
 
@@ -112,7 +108,6 @@ public class ClandController {
 
 		List<Land> landListByCatId = landService.getListByCat(catID, offset, GlobalConstant.TOTAL_ROW);
 		model.addAttribute("landListByCatId", landListByCatId);
-		model.addAttribute("titleName", objCat.getCname());
 		model.addAttribute("objCat", objCat);
 		return ViewNameConstant.VIEW_CLAND_CAT;
 	}
@@ -133,6 +128,7 @@ public class ClandController {
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
+		model.addAttribute("contact", contact);
 		if (rs.hasErrors()) {
 			return ViewNameConstant.VIEW_CLAND_CONTACT;
 		}
@@ -146,57 +142,96 @@ public class ClandController {
 		return ViewNameConstant.VIEW_CLAND_CONTACT;
 	}
 
-	@GetMapping({ URLConstant.URL_CLAND_DETAIL + "/{lname}/{lid}",
-			URLConstant.URL_CLAND_DETAIL + "/{lname}/{lid}/{check}" })
-	public String detail(@PathVariable(required = false) String check, @PathVariable int lid, Model model,
+	@GetMapping({ URLConstant.URL_CLAND_DETAIL, URLConstant.URL_CLAND_DETAIL + "/{check}" })
+	public String detail(@PathVariable(required = false) String check, @PathVariable String lid, Model model,
 			RedirectAttributes ra) {
 		List<Category> catList = categoryService.getAll2();
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
 
-		Land objLand = landService.findById(lid);
+		int landId = 0;
+		try {
+			landId = Integer.parseInt(lid);
+			if (landId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
+		}
 
-		int checkPN = 0;
-		if (check != null) {
+		Land objLand = landService.findById(landId);
+		if (objLand != null) {
+			int checkPN = 0;
+			if (check != null) {
+				try {
+					checkPN = Integer.parseInt(check);
+					if (checkPN != 0 && checkPN != 1) {
+						throw new Exception();
+					}
+					List<Land> listAllLand = landService.getAll();
+					objLand = LandUtil.getPNLand(listAllLand, landId, checkPN);
+				} catch (Exception e) {
+					ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+					return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
+				}
+			}
+
+			int newCountView = objLand.getCountView() + 1;
+			if (landService.updateCountView(newCountView, objLand.getLid()) > 0) {
+				objLand.setCountView(newCountView);
+			}
+			model.addAttribute("objLand", objLand);
+
+			List<Land> landListRelate = landService.getLandListRelate(objLand.getCat().getCid(), landId);
+			model.addAttribute("landListRelate", landListRelate);
+		}
+		return ViewNameConstant.VIEW_CLAND_DETAIL;
+	}
+
+	@GetMapping({ URLConstant.URL_CLAND_SEARCH, URLConstant.URL_CLAND_SEARCH + "/{search}/{page}" })
+	public String search(@RequestParam(required = false) String searchContent,
+			@PathVariable(required = false) String page, @PathVariable(required = false) String search, Model model,
+			RedirectAttributes ra) {
+		if (searchContent != null) {
+			if (searchContent.equals("")) {
+				ra.addFlashAttribute("searchError", messageSource.getMessage("searchError", null, Locale.getDefault()));
+				return "redirect:/" + URLConstant.URL_CLAND;
+			}
+		}
+		List<Category> catList = categoryService.getAll2();
+		List<Land> landListByView = landService.getLandListByView();
+		model.addAttribute("catList", catList);
+		model.addAttribute("landListByView", landListByView);
+
+		if (search != null) {
+			searchContent = search;
+		}
+
+		int currentPage = 1;
+		if (page != null) {
 			try {
-				checkPN = Integer.parseInt(check);
-				if (checkPN != 0 && checkPN != 1) {
+				currentPage = Integer.parseInt(page);
+				if (currentPage < 1) {
 					throw new Exception();
 				}
-				List<Land> listAllLand = landService.getAll();
-				objLand = LandUtil.getPNLand(listAllLand, lid, checkPN);
 			} catch (Exception e) {
 				ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
 				return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
 			}
 		}
 
-		int newCountView = objLand.getCountView() + 1;
-		if (landService.updateCountView(newCountView, objLand.getLid()) > 0) {
-			objLand.setCountView(newCountView);
-		}
-		model.addAttribute("objLand", objLand);
+		int offset = PageUtil.getOffset(currentPage);
+		int totalRow = landService.totalRowSearch(searchContent);
+		int totalPage = PageUtil.getTotalPage(totalRow);
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("totalPage", totalPage);
 
-		List<Land> landListRelate = landService.getLandListRelate(objLand.getCat().getCid(), lid);
-		model.addAttribute("landListRelate", landListRelate);
-		return ViewNameConstant.VIEW_CLAND_DETAIL;
-	}
-
-	@GetMapping(URLConstant.URL_CLAND_SEARCH)
-	public String search(@RequestParam String searchContent, Model model, RedirectAttributes ra) {
-		if (searchContent.equals("")) {
-			ra.addFlashAttribute("searchError", messageSource.getMessage("searchError", null, Locale.getDefault()));
-			return "redirect:/" + URLConstant.URL_CLAND;
-		}
-		List<Category> catList = categoryService.getAll2();
-		List<Land> landListByView = landService.getLandListByView();
-		List<Land> searchLandList = landService.search(searchContent);
-		model.addAttribute("catList", catList);
-		model.addAttribute("landListByView", landListByView);
+		List<Land> searchLandList = landService.search(searchContent, offset, GlobalConstant.TOTAL_ROW);
 		model.addAttribute("searchLandList", searchLandList);
-		model.addAttribute("titleName", searchContent);
-		return ViewNameConstant.VIEW_CLAND_CAT;
+		model.addAttribute("searchContent", searchContent);
+		return ViewNameConstant.VIEW_CLAND_SEARCH;
 	}
 
 }

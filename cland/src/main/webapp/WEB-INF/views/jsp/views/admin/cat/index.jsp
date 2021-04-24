@@ -101,18 +101,24 @@
 			
 			success: function(result){
 				var body = '';
-				result.forEach(item => {
-					console.log(item);
-					body += '<tr class="odd gradeA">';
-					body += '<td>' + item.cid + '</td>';
-					body += '<td>' + item.cname + '</td>';
-					body += '<td class="center text-center">';
-					body += '<a href="./cat/edit/' + item.cid + '" title="" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Sửa</a>';
-					body += '<a href="./cat/delete/' + item.cid + '" title="" class="btn btn-danger" onclick="return confirm(\'Bạn có chắc muốn xoá danh mục ' + item.cname + ' không?\')" ><span class="glyphicon glyphicon-trash"></span> Xóa</a>';
-					body += '</td>';
-					body += '</tr>';
-				});
-				$("#cat-table").html(body);
+				if (result.length > 0) {
+					result.forEach(item => {
+						console.log(item);
+						body += '<tr class="odd gradeA">';
+						body += '<td>' + item.cid + '</td>';
+						body += '<td>' + item.cname + '</td>';
+						body += '<td class="center text-center">';
+						body += '<a href="./cat/edit/' + item.cid + '" title="" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Sửa</a>';
+						body += '<a href="./cat/delete/' + item.cid + '" title="" class="btn btn-danger" onclick="return confirm(\'Bạn có chắc muốn xoá danh mục ' + item.cname + ' không?\')" ><span class="glyphicon glyphicon-trash"></span> Xóa</a>';
+						body += '</td>';
+						body += '</tr>';
+					});
+					console.log("ok");
+					$("#cat-table").html(body);
+				} else {
+					console.log("not ok");
+					$("#cat-table").html('Không tìm thấy');
+				}
 			},
 			error: function (){
 				alert('Có lỗi xảy ra');

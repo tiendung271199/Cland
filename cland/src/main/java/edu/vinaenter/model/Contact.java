@@ -2,6 +2,7 @@ package edu.vinaenter.model;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +15,7 @@ public class Contact {
 	private int cid;
 	
 	@NotEmpty
+	@Size(min = 6, max = 30)
 	private String fullname;
 	
 	@NotEmpty
@@ -21,6 +23,7 @@ public class Contact {
 	private String email;
 	
 	@NotEmpty
+	@Size(max = 50)
 	private String subject;
 	
 	@NotEmpty

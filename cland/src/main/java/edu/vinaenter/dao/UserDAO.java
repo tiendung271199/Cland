@@ -30,14 +30,24 @@ public class UserDAO extends AbstractDAO<User> {
 
 	@Override
 	public User findById(int id) {
-		String sql = "SELECT * FROM users WHERE id = ?";
-		return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), id);
+		try {
+			String sql = "SELECT * FROM users WHERE id = ?";
+			return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), id);
+		} catch (Exception e) {
+			System.out.println("No data in database");
+		}
+		return null;
 	}
 
 	@Override
 	public int save(User user) {
 		String sql = "INSERT INTO users(username,fullname,password) VALUES (?,?,?)";
 		return jdbcTemplate.update(sql, user.getUsername(), user.getFullname(), user.getPassword());
+	}
+	
+	public int save2(User user) {
+		String sql = "INSERT INTO users(username,fullname,password,roleId) VALUES (?,?,?,?)";
+		return jdbcTemplate.update(sql, user.getUsername(), user.getFullname(), user.getPassword(), user.getRoleId());
 	}
 
 	@Override
@@ -52,10 +62,14 @@ public class UserDAO extends AbstractDAO<User> {
 		return jdbcTemplate.update(sql, id);
 	}
 
-	@Override
-	public List<User> search(String content) {
-		String sql = "SELECT * FROM users WHERE username LIKE ? ORDER BY id DESC";
-		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class), "%" + content + "%");
+	public List<User> search(String content, int offset, int rowCount) {
+		String sql = "SELECT * FROM users WHERE username LIKE ? ORDER BY id DESC LIMIT ?,?";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(User.class), "%" + content + "%", offset, rowCount);
+	}
+	
+	public int totalRowSearch(String content) {
+		String sql = "SELECT COUNT(*) FROM users WHERE username LIKE ?";
+		return jdbcTemplate.queryForObject(sql, Integer.class, "%" + content + "%");
 	}
 
 	public User checkUsername(String username) {

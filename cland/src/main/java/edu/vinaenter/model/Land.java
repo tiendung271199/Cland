@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,6 +17,7 @@ public class Land {
 	private int lid;
 	
 	@NotEmpty
+	@Size(min = 20, max = 100)
 	private String lname;
 	
 	@NotEmpty
@@ -31,6 +33,7 @@ public class Land {
 	private int area;
 	
 	@NotEmpty
+	@Size(min = 20, max = 60)
 	private String address;
 	
 	private int countView;

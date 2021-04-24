@@ -19,6 +19,9 @@
 	<link rel="stylesheet" href="${contextPath}/css/font-awesome.min.css" />
 	<link href="${contextPath}/css/style.css" rel="stylesheet" media="screen" />	
 	<link href="${contextPath}/css/responsive.css" rel="stylesheet" media="screen" />
+	
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.0.min.js"></script>
+	<script type="text/javascript" src="${contextPath}/js/jquery.validate.min.js"></script>
 </head>
 
 <body>
@@ -39,8 +42,7 @@
 	</section>
 	<tiles:insertAttribute name="footer"></tiles:insertAttribute>
 	
-	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.0.min.js"></script>	
-	<script type="text/javascript" src="${contextPath}/js/jquery.tooltipster.min.js"></script>		
+	<script type="text/javascript" src="${contextPath}/js/jquery.tooltipster.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('.tooltip').tooltipster();

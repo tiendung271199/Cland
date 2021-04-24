@@ -66,6 +66,7 @@ public class AdminCatController {
 	@PostMapping(URLConstant.URL_ADMIN_ADD)
 	public String add(@Valid @ModelAttribute("category") Category category, BindingResult rs, RedirectAttributes ra,
 			Model model) {
+		model.addAttribute("objCat", category);
 		if (rs.hasErrors()) {
 			return ViewNameConstant.VIEW_ADMIN_CAT_ADD;
 		}
@@ -81,19 +82,36 @@ public class AdminCatController {
 		return "redirect:/" + URLConstant.URL_ADMIN_CAT;
 	}
 
-	@GetMapping(URLConstant.URL_ADMIN_EDIT + "/{cid}")
-	public String edit(@PathVariable int cid, Model model) {
-		Category objCat = categoryService.findById(cid);
+	@GetMapping(URLConstant.URL_ADMIN_EDIT_CAT)
+	public String edit(@PathVariable String cid, Model model, RedirectAttributes ra) {
+		int catId = 0;
+		try {
+			catId = Integer.parseInt(cid);
+			if (catId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("catError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_ADMIN_CAT;
+		}
+		Category objCat = categoryService.findById(catId);
 		model.addAttribute("objCat", objCat);
 		return ViewNameConstant.VIEW_ADMIN_CAT_EDIT;
 	}
 
-	@PostMapping(URLConstant.URL_ADMIN_EDIT)
+	@PostMapping(URLConstant.URL_ADMIN_EDIT_CAT)
 	public String edit(@Valid @ModelAttribute("cat") Category category, BindingResult rs, Model model,
 			RedirectAttributes ra) {
+		model.addAttribute("objCat", category);
 		if (rs.hasErrors()) {
-			model.addAttribute("objCat", category);
 			return ViewNameConstant.VIEW_ADMIN_CAT_EDIT;
+		}
+		if (categoryService.checkCatName(category.getCname()) != null) {
+			Category objCat = categoryService.checkCatName(category.getCname());
+			if (objCat.getCid() != category.getCid()) {
+				model.addAttribute("cError", messageSource.getMessage("loopCatError", null, Locale.getDefault()));
+				return ViewNameConstant.VIEW_ADMIN_CAT_EDIT;
+			}
 		}
 		if (categoryService.update(category) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("editSuccess", null, Locale.getDefault()));
@@ -103,9 +121,19 @@ public class AdminCatController {
 		return "redirect:/" + URLConstant.URL_ADMIN_CAT;
 	}
 
-	@GetMapping(URLConstant.URL_ADMIN_DELETE + "/{cid}")
-	public String delete(@PathVariable int cid, Model model, RedirectAttributes ra) {
-		if (categoryService.del(cid) > 0) {
+	@GetMapping(URLConstant.URL_ADMIN_DELETE)
+	public String delete(@PathVariable String id, Model model, RedirectAttributes ra) {
+		int catId = 0;
+		try {
+			catId = Integer.parseInt(id);
+			if (catId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("catError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_ADMIN_CAT;
+		}
+		if (categoryService.del(catId) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("deleteSuccess", null, Locale.getDefault()));
 		} else {
 			ra.addFlashAttribute("catError", messageSource.getMessage("error", null, Locale.getDefault()));

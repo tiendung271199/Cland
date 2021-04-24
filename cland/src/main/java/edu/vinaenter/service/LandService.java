@@ -51,10 +51,13 @@ public class LandService implements ICRUDService<Land> {
 		return objLand;
 	}
 	
-	@Override
-	public List<Land> search(String content) {
-		List<Land> searchLandList = landDAO.search(content);
+	public List<Land> search(String content, int offset, int rowCount) {
+		List<Land> searchLandList = landDAO.search(content, offset, rowCount);
 		return searchLandList;
+	}
+	
+	public int totalRowSearch(String content) {
+		return landDAO.totalRowSearch(content);
 	}
 
 	// Get land list by category id
@@ -93,6 +96,11 @@ public class LandService implements ICRUDService<Land> {
 	
 	public int totalRowByCat(int catID) {
 		return landDAO.totalRowByCat(catID);
+	}
+
+	@Override
+	public List<Land> search(String content) {
+		return null;
 	}
 
 }

@@ -11,20 +11,29 @@
     <put-attribute name="footer" value="/WEB-INF/views/jsp/components/cland/footer.jsp" />
   </definition>
   
+  <!-- INDEX -->
   <definition name="cland.index" extends="template.cland">
     <put-attribute name="body" value="/WEB-INF/views/jsp/views/cland/index.jsp" />
   </definition>
   
+  <!-- CATEGORY -->
   <definition name="cland.cat" extends="template.cland">
     <put-attribute name="body" value="/WEB-INF/views/jsp/views/cland/cat.jsp" />
   </definition>
   
+  <!-- CONTACT -->
   <definition name="cland.contact" extends="template.cland">
     <put-attribute name="body" value="/WEB-INF/views/jsp/views/cland/contact.jsp" />
   </definition>
   
+  <!-- DETAIL -->
   <definition name="cland.detail" extends="template.cland">
     <put-attribute name="body" value="/WEB-INF/views/jsp/views/cland/detail.jsp" />
+  </definition>
+
+  <!-- SEARCH -->
+  <definition name="cland.search" extends="template.cland">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/cland/search.jsp" />
   </definition>
   
 </tiles-definitions>

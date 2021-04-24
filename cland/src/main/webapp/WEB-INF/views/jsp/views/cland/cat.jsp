@@ -5,19 +5,13 @@
 	<div class="clearfix content">
 		<div class="content_title">
 			<h2>	
-				${titleName}
+				${objCat.cname}
 			</h2>
 		</div>
 		<div class="clearfix single_work_container">
-			<c:if test="${not empty landListByCatId}">
-				<c:set value="${landListByCatId}" var="landList" ></c:set>
-			</c:if>
-			<c:if test="${not empty searchLandList}">
-				<c:set value="${searchLandList}" var="landList" ></c:set>
-			</c:if>
 			<c:choose>
-				<c:when test="${not empty landList}">
-					<c:forEach items="${landList}" var="objLand" >
+				<c:when test="${not empty landListByCatId}">
+					<c:forEach items="${landListByCatId}" var="objLand" >
 						<c:set value="${objLand.lname}" var="landName" ></c:set>
 						<div class="clearfix single_work">
 							<img class="img_top" src="${contextPath}/images/lands/${objLand.picture}" alt=""/>

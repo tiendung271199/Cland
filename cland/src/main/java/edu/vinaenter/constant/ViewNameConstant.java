@@ -6,6 +6,7 @@ public class ViewNameConstant {
 	public static final String VIEW_CLAND_CAT = "cland.cat";
 	public static final String VIEW_CLAND_CONTACT = "cland.contact";
 	public static final String VIEW_CLAND_DETAIL = "cland.detail";
+	public static final String VIEW_CLAND_SEARCH = "cland.search";
 	
 	public static final String VIEW_ADMIN = "admin.index";
 	public static final String VIEW_ADMIN_CAT = "admin.cat";
@@ -21,5 +22,7 @@ public class ViewNameConstant {
 
 	public static final String VIEW_AUTH_LOGIN = "auth.login";
 	public static final String VIEW_AUTH_SIGNUP = "auth.signup";
+
+	public static final String VIEW_ERROR_403 = "error.403";
 	
 }

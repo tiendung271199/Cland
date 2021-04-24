@@ -10,10 +10,16 @@
 	                <h6>Đăng ký</h6>
 					
 					<form action="" method="post">
+						<c:if test="${not empty uError}">
+							<div class="alert alert-danger" role="alert">
+							    ${uError}
+							</div>
+						</c:if>
+					
 		                <div class="form-group">
 		                	<label class="text-left pull-left" for="username">Tên đăng nhập</label>
 		                	<form:errors path="userError.username" cssStyle="color:red;font-style:italic" ></form:errors>
-		               		<input class="form-control" name="username" value="" type="text" placeholder="Username">
+		               		<input class="form-control" name="username" value="${objUser.username}" type="text" placeholder="Username">
 		                </div>
 		                
 		                <div class="form-group">
@@ -25,7 +31,7 @@
 		                <div class="form-group">
 		                	<label class="text-left pull-left" for="fullname">Họ tên</label>
 		                	<form:errors path="userError.fullname" cssStyle="color:red;font-style:italic" ></form:errors>
-		                	<input class="form-control" name="fullname" value="" type="text" placeholder="Fullname">
+		                	<input class="form-control" name="fullname" value="${objUser.fullname}" type="text" placeholder="Fullname">
 		                </div>
 		                
 		                <div class="row" style="margin-top: 30px">

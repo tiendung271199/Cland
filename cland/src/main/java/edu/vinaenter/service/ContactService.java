@@ -48,8 +48,7 @@ public class ContactService implements ICRUDService<Contact> {
 
 	@Override
 	public List<Contact> search(String content) {
-		List<Contact> list = contactDAO.search(content);
-		return list;
+		return null;
 	}
 
 	@Override
@@ -60,6 +59,15 @@ public class ContactService implements ICRUDService<Contact> {
 	
 	public int totalRow() {
 		return contactDAO.totalRow();
+	}
+	
+	public List<Contact> search(String content, int offset, int rowCount) {
+		List<Contact> list = contactDAO.search(content, offset, rowCount);
+		return list;
+	}
+	
+	public int totalRowSearch(String content) {
+		return contactDAO.totalRowSearch(content);
 	}
 
 }

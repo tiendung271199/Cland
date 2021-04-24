@@ -14,9 +14,11 @@ public class User {
 	private int id;
 	
 	@NotEmpty
+	@Size(min = 5, max = 20)
 	private String username;
 	
 	@NotEmpty
+	@Size(min = 6, max = 30)
 	private String fullname;
 	
 	private String rememberToken;
@@ -24,4 +26,7 @@ public class User {
 	@NotEmpty
 	@Size(min = 6, max = 16)
 	private String password;
+	
+	private int roleId;
+	
 }

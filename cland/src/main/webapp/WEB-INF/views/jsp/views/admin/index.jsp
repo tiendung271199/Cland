@@ -14,7 +14,7 @@
 	               </span>
 	                   <div class="text-box">
 	                       <p class="main-text"><a class="fs-14" href="${urlCat}" title="">Quản lý danh mục</a></p>
-	                       <p class="text-muted">Có 4 danh mục</p>
+	                       <p class="text-muted">Có ${totalRowCat} danh mục</p>
 	                   </div>
 	               </div>
 	           </div>
@@ -25,7 +25,7 @@
 	               </span>
 	                   <div class="text-box">
 	                       <p class="main-text"><a class="fs-14" href="${urlLand}" title="">Quản lý land</a></p>
-	                       <p class="text-muted">Có 20 land</p>
+	                       <p class="text-muted">Có ${totalRowLand} tin</p>
 	                   </div>
 	               </div>
 	           </div>
@@ -36,7 +36,7 @@
 	               </span>
 	                   <div class="text-box">
 	                       <p class="main-text"><a class="fs-14" href="${urlUser}" title="">Quản lý người dùng</a></p>
-	                       <p class="text-muted">Có 5 người dùng</p>
+	                       <p class="text-muted">Có ${totalRowUser} người dùng</p>
 	                   </div>
 	               </div>
 	           </div>

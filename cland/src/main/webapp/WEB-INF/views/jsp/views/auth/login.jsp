@@ -9,10 +9,19 @@
 	            	<img width="100px" height="100px" class="img-circle" src="${contextPath}/images/icon-180x180.png">
 	                <h6>Đăng nhập</h6>
 					
-					<form action="" method="post">
-						<div class="form-group">
-							<p style="color:red; font-style:italic">${loginError}</p>
-						</div>
+					<form action="${urlAuth}/login" method="post">
+						<c:if test="${not empty loginError}">
+							<div class="alert alert-danger" role="alert">
+							    ${loginError}
+							</div>
+						</c:if>
+						
+						<c:if test="${not empty signupSuccess}">
+							<div class="alert alert-success" role="alert">
+							    ${signupSuccess}
+							</div>
+						</c:if>
+						
 		                <div class="form-group">
 		                	<label class="text-left pull-left" for="username">Tên đăng nhập</label>
 		               		<input class="form-control" name="username" value="" type="text" placeholder="Username">

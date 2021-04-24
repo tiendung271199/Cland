@@ -42,8 +42,8 @@ public class AdminLandController {
 	@Autowired
 	private LandService landService;
 
-	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}" })
-	public String index(@PathVariable(required = false) String page,
+	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}", URLConstant.URL_EMPTY + "/{search}/{page}" })
+	public String index(@PathVariable(required = false) String page, @PathVariable(required = false) String search,
 			@RequestParam(required = false) String searchContent, Model model, RedirectAttributes ra) {
 		int currentPage = 1;
 		if (page != null) {
@@ -57,16 +57,21 @@ public class AdminLandController {
 				return "redirect:/" + URLConstant.URL_ADMIN_LAND;
 			}
 		}
+		if (search != null) {
+			searchContent = search;
+		}
 		int offset = PageUtil.getOffset(currentPage);
 		int totalRow = landService.totalRow();
 		int totalPage = PageUtil.getTotalPage(totalRow);
-		model.addAttribute("currentPage", currentPage);
-		model.addAttribute("totalPage", totalPage);
 		List<Land> landList = landService.getList(offset, GlobalConstant.TOTAL_ROW);
 		if (searchContent != null) {
 			model.addAttribute("searchContent", searchContent);
-			landList = landService.search(searchContent);
+			totalRow = landService.totalRowSearch(searchContent);
+			totalPage = PageUtil.getTotalPage(totalRow);
+			landList = landService.search(searchContent, offset, GlobalConstant.TOTAL_ROW);
 		}
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("totalPage", totalPage);
 		model.addAttribute("landList", landList);
 		return ViewNameConstant.VIEW_ADMIN_LAND;
 	}
@@ -104,16 +109,26 @@ public class AdminLandController {
 		return "redirect:/" + URLConstant.URL_ADMIN_LAND;
 	}
 
-	@GetMapping(URLConstant.URL_ADMIN_EDIT + "/{id}")
-	public String edit(@PathVariable int id, Model model) {
+	@GetMapping(URLConstant.URL_ADMIN_EDIT_LAND)
+	public String edit(@PathVariable String lid, Model model, RedirectAttributes ra) {
 		List<Category> catList = categoryService.getAll();
 		model.addAttribute("catList", catList);
-		Land land = landService.findById(id);
+		int landId = 0;
+		try {
+			landId = Integer.parseInt(lid);
+			if (landId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("landError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_ADMIN_LAND;
+		}
+		Land land = landService.findById(landId);
 		model.addAttribute("objLand", land);
 		return ViewNameConstant.VIEW_ADMIN_LAND_EDIT;
 	}
 
-	@PostMapping(URLConstant.URL_ADMIN_EDIT)
+	@PostMapping(URLConstant.URL_ADMIN_EDIT_LAND)
 	public String edit(@Valid @ModelAttribute("landError") Land land, BindingResult rs,
 			@RequestParam("image") MultipartFile multipartFile, RedirectAttributes ra, Model model) {
 		List<Category> catList = categoryService.getAll();
@@ -143,10 +158,20 @@ public class AdminLandController {
 		return "redirect:/" + URLConstant.URL_ADMIN_LAND;
 	}
 
-	@GetMapping(URLConstant.URL_ADMIN_DELETE + "/{id}")
-	public String delete(@PathVariable int id, Model model, RedirectAttributes ra) {
-		Land objLand = landService.findById(id);
-		if (landService.del(id) > 0) {
+	@GetMapping(URLConstant.URL_ADMIN_DELETE)
+	public String delete(@PathVariable String id, Model model, RedirectAttributes ra) {
+		int landId = 0;
+		try {
+			landId = Integer.parseInt(id);
+			if (landId < 1) {
+				throw new Exception();
+			}
+		} catch (Exception e) {
+			ra.addFlashAttribute("landError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			return "redirect:/" + URLConstant.URL_ADMIN_LAND;
+		}
+		Land objLand = landService.findById(landId);
+		if (landService.del(landId) > 0) {
 			if (FileUtil.deleteFile(objLand.getPicture())) {
 				System.out.println();
 			}

@@ -40,10 +40,14 @@ public class ContactDAO extends AbstractDAO<Contact> {
 		return jdbcTemplate.update(sql, id);
 	}
 	
-	@Override
-	public List<Contact> search(String content) {
-		String sql = "SELECT * FROM vnecontact WHERE fullname LIKE ? ORDER BY cid DESC";
-		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Contact.class), "%" + content + "%");
+	public List<Contact> search(String content, int offset, int rowCount) {
+		String sql = "SELECT * FROM vnecontact WHERE fullname LIKE ? ORDER BY cid DESC LIMIT ?,?";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Contact.class), "%" + content + "%", offset, rowCount);
+	}
+	
+	public int totalRowSearch(String content) {
+		String sql = "SELECT COUNT(*) FROM vnecontact WHERE fullname LIKE ?";
+		return jdbcTemplate.queryForObject(sql, Integer.class, "%" + content + "%");
 	}
 	
 }

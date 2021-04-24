@@ -7,11 +7,17 @@
 			<div class="panel-title ">Thêm tin</div>
 		</div>
 		<div class="content-box-large box-with-header">
-			<form action="${urlLand}/add" method="post" enctype="multipart/form-data" >
+			<form action="${urlLand}/add" method="post" enctype="multipart/form-data" id="form_land_add">
 				<div>
 					<div class="row mb-10"></div>
 					<div class="row">
 						<div class="col-sm-6">
+							<c:if test="${not empty lError}">
+								<div class="alert alert-danger" role="alert">
+								    ${lError}
+								</div>
+							</c:if>
+						
 							<div class="form-group">
 								<label for="name">Tên tin</label>
 								<form:errors path="landError.lname" cssStyle="color:red;font-style:italic" ></form:errors>
@@ -23,7 +29,7 @@
 								<select name="cat.cid" class="form-control">
 								   <c:if test="${not empty catList}">
 								   	   <c:forEach items="${catList}" var="objCat" >
-									   	  <option value="${objCat.cid}" <c:if test='${objLand.cid == objCat.cid}'>selected</c:if> >${objCat.cname}</option>
+									   	  <option value="${objCat.cid}" <c:if test='${objLand.cat.cid == objCat.cid}'>selected</c:if> >${objCat.cname}</option>
 									   </c:forEach>
 								   </c:if>
 								</select>
@@ -71,3 +77,56 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function (){
+		$('#form_land_add').validate({
+			rules:{
+				"lname":{
+					required: true,
+					minlength: 20,
+					maxlength: 100,
+				},
+				"description":{
+					required: true,
+				},
+				"address":{
+					required: true,
+					minlength: 20,
+					maxlength: 60,
+				},
+				"area":{
+					required: true,
+					digits: true,
+					min: 10,
+				},
+				"image":{
+					required: true,
+				}
+			},
+			messages:{
+				"lname":{
+					required: "Bắt buộc",
+					minlength: "Tên tin tối thiểu 20 ký tự",
+					maxlength: "Tên tin tối đa 100 ký tự",
+				},
+				"description":{
+					required: "Bắt buộc",
+				},
+				"address":{
+					required: "Bắt buộc",
+					minlength: "Địa chỉ tối thiểu 20 ký tự",
+					maxlength: "Địa chỉ tối đa 60 ký tự",
+				},
+				"area":{
+					required: "Bắt buộc",
+					digits: "Diện tích là số không âm",
+					min: "Diện tích tối thiểu là 10",
+				},
+				"image":{
+					required: "Bắt buộc",
+				}
+			}
+		})
+	})
+</script>

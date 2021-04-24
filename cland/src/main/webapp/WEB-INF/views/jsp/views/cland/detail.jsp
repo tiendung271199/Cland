@@ -3,25 +3,32 @@
 <%@ include file="/WEB-INF/views/jsp/components/taglib.jsp"%>
 <div class="clearfix main_content floatleft">
 	<div class="clearfix content">
-		<c:if test="${not empty objLand}">
-			<h1>${objLand.lname}</h1>
-			<div class="clearfix post-meta">
-				<p style="margin-bottom: 15px">
-					<span><i class="fa fa-clock-o"></i> Địa chỉ: ${objLand.address}</span>
-				</p>
-				<p>
-					<span><i class="fa fa-folder"></i> Diện tích: ${objLand.area}m2</span>
-					<span><i class="fa fa-eye"></i> Lượt xem: ${objLand.countView}</span>
-				</p>
-			</div>
-			
-			<div class="vnecontent">
-				<p>${objLand.description}</p>
-			</div>
-			
-			<a class="btn" href="${urlDetail}/${stringUtil.makeSlug(objLand.lname)}/${objLand.lid}/0">Bài trước</a>
-			<a class="btn" href="${urlDetail}/${stringUtil.makeSlug(objLand.lname)}/${objLand.lid}/1">Bài kế</a>
-		</c:if>
+		<c:choose>
+			<c:when test="${not empty objLand}">
+				<h1>${objLand.lname}</h1>
+				<div class="clearfix post-meta">
+					<p style="margin-bottom: 15px">
+						<span><i class="fa fa-clock-o"></i> Địa chỉ: ${objLand.address}</span>
+					</p>
+					<p>
+						<span><i class="fa fa-folder"></i> Diện tích: ${objLand.area}m2</span>
+						<span><i class="fa fa-eye"></i> Lượt xem: ${objLand.countView}</span>
+					</p>
+				</div>
+				
+				<div class="vnecontent">
+					<p>${objLand.description}</p>
+				</div>
+				
+				<a class="btn" href="${urlDetail}/${stringUtil.makeSlug(objLand.lname)}/${objLand.lid}/0">Bài trước</a>
+				<a class="btn" href="${urlDetail}/${stringUtil.makeSlug(objLand.lname)}/${objLand.lid}/1">Bài kế</a>
+			</c:when>
+			<c:otherwise>
+				<div style="padding-left: 20px">
+					<p>Không có bài viết</p>
+				</div>
+			</c:otherwise>
+		</c:choose>
 	</div>
 	
 	<div class="more_themes">

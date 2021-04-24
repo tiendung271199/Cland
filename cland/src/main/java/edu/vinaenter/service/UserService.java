@@ -29,6 +29,10 @@ public class UserService implements ICRUDService<User> {
 	public int save(User user) {
 		return userDAO.save(user);
 	}
+	
+	public int save2(User user) {
+		return userDAO.save2(user);
+	}
 
 	@Override
 	public int del(int id) {
@@ -48,8 +52,16 @@ public class UserService implements ICRUDService<User> {
 
 	@Override
 	public List<User> search(String content) {
-		List<User> list = userDAO.search(content);
+		return null;
+	}
+	
+	public List<User> search(String content, int offset, int rowCount) {
+		List<User> list = userDAO.search(content, offset, rowCount);
 		return list;
+	}
+	
+	public int totalRowSearch(String content) {
+		return userDAO.totalRowSearch(content);
 	}
 
 	public boolean checkLogin(String username, String password) {

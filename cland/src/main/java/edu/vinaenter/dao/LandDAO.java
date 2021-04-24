@@ -103,7 +103,10 @@ public class LandDAO extends AbstractDAO<Land> {
 				return list;
 			}
 		}, id);
-		return list.get(0);
+		if (list.size() > 0) {
+			return list.get(0);
+		}
+		return null;
 	}
 
 	@Override
@@ -131,9 +134,8 @@ public class LandDAO extends AbstractDAO<Land> {
 		return jdbcTemplate.update(sql, id);
 	}
 
-	@Override
-	public List<Land> search(String content) {
-		String sql = "SELECT * FROM lands INNER JOIN categories ON lands.cid = categories.cid WHERE lname LIKE ? ORDER BY lid DESC";
+	public List<Land> search(String content, int offset, int rowCount) {
+		String sql = "SELECT * FROM lands INNER JOIN categories ON lands.cid = categories.cid WHERE lname LIKE ? ORDER BY lid DESC LIMIT ?,?";
 		return jdbcTemplate.query(sql, new ResultSetExtractor<List<Land>>() {
 			List<Land> list = new ArrayList<Land>();
 
@@ -147,7 +149,12 @@ public class LandDAO extends AbstractDAO<Land> {
 				}
 				return list;
 			}
-		}, "%" + content + "%");
+		}, "%" + content + "%", offset, rowCount);
+	}
+	
+	public int totalRowSearch(String content) {
+		String sql = "SELECT COUNT(*) FROM lands INNER JOIN categories ON lands.cid = categories.cid WHERE lname LIKE ?";
+		return jdbcTemplate.queryForObject(sql, Integer.class, "%" + content + "%");
 	}
 
 	// Get land list by category id

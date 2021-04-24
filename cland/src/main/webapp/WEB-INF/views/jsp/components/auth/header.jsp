@@ -21,14 +21,8 @@
                       <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account <b class="caret"></b></a>
                         <ul class="dropdown-menu animated fadeInUp">
-                          <c:choose>
-                     		<c:when test="${not empty loginAccount}">
-                          	  <li><a href="${urlAuth}/logout">Logout</a></li>
-                            </c:when>
-                            <c:otherwise>
-                              <li><a href="${urlAuth}/login">Login</a></li>
-                            </c:otherwise>
-                     	  </c:choose>
+                        	<li><a href="${urlAuth}/login">Login</a></li>
+                        	<li><a href="${urlAuth}/logout">Logout</a></li>
                         </ul>
                       </li>
                     </ul>
