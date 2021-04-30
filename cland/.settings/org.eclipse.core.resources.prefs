@@ -4,6 +4,7 @@ encoding//src/main/java/edu/vinaenter/dao/UserDAO.java=UTF-8
 encoding//src/main/java/edu/vinaenter/util/FileUtil.java=UTF-8
 encoding//src/main/java/edu/vinaenter/util/LandUtil.java=UTF-8
 encoding//src/main/java/edu/vinaenter/util/StringUtil.java=UTF-8
+encoding//src/main/java/edu/vinaenter/validate/FileValidator.java=UTF-8
 encoding//src/main/resources/messages/error-messages.properties=UTF-8
 encoding//src/main/resources/messages/success-messages.properties=UTF-8
 encoding//src/main/resources/messages/validator-messages.properties=UTF-8

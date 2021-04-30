@@ -15,6 +15,9 @@
     <!-- styles -->
     <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
     <link href="${contextPath}/css/style1.css" rel="stylesheet">
+    
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.0.min.js"></script>
+	<script type="text/javascript" src="${contextPath}/js/jquery.validate.min.js"></script>
   </head>
   <body>
   	<c:url value="/admin" var="urlIndex" scope="application" ></c:url>
@@ -25,8 +28,6 @@
 		<tiles:insertAttribute name="body"></tiles:insertAttribute>
 	</div>
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="${contextPath}/bootstrap/js/bootstrap.min.js"></script>
     <script src="${contextPath}/js/custom.js"></script>

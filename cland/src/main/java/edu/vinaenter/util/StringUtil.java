@@ -1,27 +1,9 @@
 package edu.vinaenter.util;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.Normalizer;
 import java.util.regex.Pattern;
 
 public class StringUtil {
-
-	public static String md5(String str) {
-		MessageDigest md;
-		String result = "";
-		try {
-			md = MessageDigest.getInstance("MD5");
-			md.update(str.getBytes());
-			BigInteger bi = new BigInteger(1, md.digest());
-
-			result = bi.toString(16);
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}
-		return result;
-	}
 
 	public static String makeSlug(String title) {
 		String slug = Normalizer.normalize(title, Normalizer.Form.NFD);

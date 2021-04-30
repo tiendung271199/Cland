@@ -19,10 +19,13 @@
                   <nav class="collapse navbar-collapse bs-navbar-collapse navbar-right" role="navigation">
                     <ul class="nav navbar-nav">
                       <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account <b class="caret"></b></a>
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        	Welcome
+                        	<b class="caret"></b>
+                        </a>
                         <ul class="dropdown-menu animated fadeInUp">
                         	<li><a href="${urlAuth}/login">Login</a></li>
-                        	<li><a href="${urlAuth}/logout">Logout</a></li>
+                        	<li><a href="${urlAuth}/signup">Signup</a></li>
                         </ul>
                       </li>
                     </ul>

@@ -60,13 +60,5 @@ public class AppConfig {
 				"/WEB-INF/templates/auth-template.xml");
 		return tilesConfigurer;
 	}
-
-//	@Bean(value = "characterEncodingFilter")
-//	public CharacterEncodingFilter characterEncodingFilter(ServletContext servletContext) {
-//		CharacterEncodingFilter encodingFilter = new CharacterEncodingFilter();
-//		encodingFilter.setEncoding("UTF-8");
-//		encodingFilter.setForceEncoding(true);
-//		return encodingFilter;
-//	}
-
+	
 }

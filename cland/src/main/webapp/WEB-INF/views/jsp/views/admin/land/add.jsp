@@ -37,9 +37,9 @@
 			
 							<div class="form-group">
 								<label>Hình ảnh</label>
-								<span style="color: red; font-style: italic">${lError}</span>
-								<input type="file" name="image" class="btn btn-default" id="exampleInputFile1" accept="image/*">
-								<p class="help-block"><em>Định dạng: jpg, png, jpeg,...</em></p>
+								<form:errors path="landError.picture" cssStyle="color:red;font-style:italic" ></form:errors>
+								<input type="file" name="image" class="btn btn-default" id="exampleInputFile1" >
+								<p class="help-block"><em>Định dạng: jpg, png</em></p>
 							</div>
 							
 							<div class="form-group">
@@ -129,4 +129,8 @@
 			}
 		})
 	})
+</script>
+
+<script type="text/javascript">
+	document.getElementById("func_land").className = "current";
 </script>

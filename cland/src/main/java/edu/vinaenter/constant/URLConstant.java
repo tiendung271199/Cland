@@ -16,6 +16,8 @@ public class URLConstant {
 	public static final String URL_ADMIN_EDIT_LAND = "edit/{lid}";
 	public static final String URL_ADMIN_DELETE = "delete/{id}";
 	
+	public static final String URL_ADMIN_PROFILE = "profile";
+
 	public static final String URL_ADMIN_SEARCH = "search";
 	
 	public static final String URL_AUTH_LOGIN = "auth/login";
@@ -30,5 +32,6 @@ public class URLConstant {
 	
 	public static final String URL_ERROR = "error";
 	public static final String URL_ERROR_STATUS_403 = "403";
+	public static final String URL_ERROR_STATUS_404 = "404";
 	
 }

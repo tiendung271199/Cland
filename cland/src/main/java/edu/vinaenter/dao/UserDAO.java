@@ -72,7 +72,7 @@ public class UserDAO extends AbstractDAO<User> {
 		return jdbcTemplate.queryForObject(sql, Integer.class, "%" + content + "%");
 	}
 
-	public User checkUsername(String username) {
+	public User findUserByUsername(String username) {
 		try {
 			String sql = "SELECT * FROM users WHERE username = ?";
 			return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(User.class), username);

@@ -50,6 +50,8 @@ public class ClandController {
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
+		model.addAttribute("catListHot", categoryService.getCatHot());
+
 		int currentPage = 1;
 		if (page != null) {
 			try {
@@ -58,7 +60,7 @@ public class ClandController {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+				ra.addFlashAttribute("urlError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 				return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
 			}
 		}
@@ -79,6 +81,7 @@ public class ClandController {
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
+		model.addAttribute("catListHot", categoryService.getCatHot());
 
 		Category objCat = null;
 		int catID = 0, currentPage = 1;
@@ -96,7 +99,7 @@ public class ClandController {
 				}
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("urlError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
 		}
 
@@ -118,6 +121,7 @@ public class ClandController {
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
+		model.addAttribute("catListHot", categoryService.getCatHot());
 		return ViewNameConstant.VIEW_CLAND_CONTACT;
 	}
 
@@ -128,18 +132,18 @@ public class ClandController {
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
+		model.addAttribute("catListHot", categoryService.getCatHot());
+
 		model.addAttribute("contact", contact);
 		if (rs.hasErrors()) {
 			return ViewNameConstant.VIEW_CLAND_CONTACT;
 		}
 		if (contactService.save(contact) > 0) {
-			ra.addFlashAttribute("sendContactSuccess",
-					messageSource.getMessage("sendContactSuccess", null, Locale.getDefault()));
-			return "redirect:/" + URLConstant.URL_CLAND_CONTACT;
+			ra.addFlashAttribute("sendContactSuccess", messageSource.getMessage("sendContactSuccess", null, Locale.getDefault()));
+		} else {
+			ra.addFlashAttribute("sendContactError", messageSource.getMessage("sendContactError", null, Locale.getDefault()));
 		}
-		ra.addFlashAttribute("sendContactError",
-				messageSource.getMessage("sendContactError", null, Locale.getDefault()));
-		return ViewNameConstant.VIEW_CLAND_CONTACT;
+		return "redirect:/" + URLConstant.URL_CLAND_CONTACT;
 	}
 
 	@GetMapping({ URLConstant.URL_CLAND_DETAIL, URLConstant.URL_CLAND_DETAIL + "/{check}" })
@@ -149,6 +153,7 @@ public class ClandController {
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
+		model.addAttribute("catListHot", categoryService.getCatHot());
 
 		int landId = 0;
 		try {
@@ -157,7 +162,7 @@ public class ClandController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("urlError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
 		}
 
@@ -173,7 +178,7 @@ public class ClandController {
 					List<Land> listAllLand = landService.getAll();
 					objLand = LandUtil.getPNLand(listAllLand, landId, checkPN);
 				} catch (Exception e) {
-					ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+					ra.addFlashAttribute("urlError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 					return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
 				}
 			}
@@ -204,6 +209,7 @@ public class ClandController {
 		List<Land> landListByView = landService.getLandListByView();
 		model.addAttribute("catList", catList);
 		model.addAttribute("landListByView", landListByView);
+		model.addAttribute("catListHot", categoryService.getCatHot());
 
 		if (search != null) {
 			searchContent = search;
@@ -217,7 +223,7 @@ public class ClandController {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				ra.addFlashAttribute("pageError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+				ra.addFlashAttribute("urlError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 				return "redirect:/" + URLConstant.URL_CLAND + "?error=url";
 			}
 		}

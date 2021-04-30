@@ -9,13 +9,13 @@
 	            	<img width="100px" height="100px" class="img-circle" src="${contextPath}/images/icon-180x180.png">
 	                <h6>Đăng nhập</h6>
 					
-					<form action="${urlAuth}/login" method="post">
-						<c:if test="${not empty loginError}">
+					<form action="${urlAuth}/login" method="post" >
+						<c:if test="${not empty param.msg}">
 							<div class="alert alert-danger" role="alert">
-							    ${loginError}
+							    Đăng nhập thất bại, sai username hoặc password
 							</div>
 						</c:if>
-						
+					
 						<c:if test="${not empty signupSuccess}">
 							<div class="alert alert-success" role="alert">
 							    ${signupSuccess}

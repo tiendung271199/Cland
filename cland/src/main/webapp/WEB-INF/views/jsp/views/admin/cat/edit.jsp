@@ -14,12 +14,6 @@
 							<div class="row mb-10"></div>
 							<div class="row">
 								<div class="col-sm-6">
-									<c:if test="${not empty cError}">
-										<div class="alert alert-danger" role="alert">
-										    ${cError}
-										</div>
-									</c:if>
-								
 									<div class="form-group">
 										<label for="name">Tên danh mục</label>
 										<form:errors path="catError.cname" cssStyle="color:red;font-style:italic" ></form:errors>
@@ -66,4 +60,8 @@
 			}
 		})
 	})
+</script>
+
+<script type="text/javascript">
+	document.getElementById("func_category").className = "current";
 </script>

@@ -13,18 +13,11 @@
 					
 					<div class="row">
 						<div class="col-sm-6">
-							<c:if test="${not empty cError}">
-								<div class="alert alert-danger" role="alert">
-								    ${cError}
-								</div>
-							</c:if>
-						
 							<div class="form-group">
 								<label for="name">Tên danh mục</label>
-								<form:errors path="category.cname" cssStyle="color:red;font-style:italic" ></form:errors>
+								<form:errors path="catError.cname" cssStyle="color:red;font-style:italic" ></form:errors>
 								<input type="text" name="cname" class="form-control" value="${objCat.cname}" placeholder="Nhập tên danh mục">
 							</div>
-							
 						</div>
 					</div>
 					<hr>
@@ -59,4 +52,8 @@
 			}
 		})
 	})
+</script>
+
+<script type="text/javascript">
+	document.getElementById("func_category").className = "current";
 </script>

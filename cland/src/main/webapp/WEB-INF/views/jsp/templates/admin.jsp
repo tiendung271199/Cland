@@ -26,6 +26,7 @@
   	<c:url value="/admin/land" var="urlLand" scope="application" ></c:url>
   	<c:url value="/admin/contact" var="urlContact" scope="application" ></c:url>
   	<c:url value="/admin/user" var="urlUser" scope="application" ></c:url>
+  	<c:url value="/admin/profile" var="urlProfile" scope="application" ></c:url>
   	<c:url value="/auth" var="urlAuth" scope="application" ></c:url>
   
   	<tiles:insertAttribute name="header"></tiles:insertAttribute>

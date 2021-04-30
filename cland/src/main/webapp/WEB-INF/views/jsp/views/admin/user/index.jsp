@@ -65,19 +65,66 @@
 								<nav class="text-center" aria-label="...">
 									<c:if test="${totalPage > 0}">
 									   <ul class="pagination">
-									   	  <c:if test="${currentPage > 1}">
-									      	<li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${currentPage - 1}" aria-label="Previous" ><span aria-hidden="true">«</span></a></li>
+									   	  <c:set value="${currentPage - 1}" var="pagePrevious"></c:set>
+									   	  <c:if test="${currentPage == 1}">
+									   	  	<c:set value="${currentPage}" var="pagePrevious"></c:set>
 									      </c:if>
+										  <li <c:if test='${currentPage == 1}'>class="disabled"</c:if>>
+										  	<a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${pagePrevious}" aria-label="Previous" >
+										  		<span aria-hidden="true">«</span>
+										  	</a>
+										  </li>
 									      
-									      <c:forEach begin="1" end="${totalPage}" var="page">
-									      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
-									      	  	  <a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
-									      	  </li>
-									      </c:forEach>
+									      <c:choose>
+										      <c:when test="${totalPage > 5}">
+										      	  <c:if test="${currentPage > 3 and currentPage < (totalPage - 2)}">
+										      	  	  <li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/1">Fi</a></li>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <c:forEach begin="${currentPage - 2}" end="${currentPage + 2}" var="page">
+												      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+												      	  	  <a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+												      	  </li>
+												      </c:forEach>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${totalPage}">La</a></li>
+											      </c:if>
+										      	  <c:if test="${currentPage <= 3}">
+												      <c:forEach begin="1" end="5" var="page">
+												      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+												      	  	  <a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+												      	  </li>
+												      </c:forEach>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${totalPage}">La</a></li>
+											      </c:if>
+										      	  <c:if test="${currentPage >= (totalPage - 2)}">
+										      	  	  <li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/1">Fi</a></li>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <c:forEach begin="${totalPage - 4}" end="${totalPage}" var="page">
+												      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+												      	  	  <a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+												      	  </li>
+												      </c:forEach>
+											      </c:if>
+										      </c:when>
+										      <c:otherwise>
+										      	  <c:forEach begin="1" end="${totalPage}" var="page">
+											      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+											      	  	  <a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+											      	  </li>
+											      </c:forEach>
+										      </c:otherwise>
+									      </c:choose>
 									      
-									      <c:if test="${currentPage < totalPage}">
-									      	<li><a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${currentPage + 1}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+									      <c:set value="${currentPage + 1}" var="pageNext"></c:set>
+									      <c:if test="${currentPage == totalPage}">
+									      	<c:set value="${currentPage}" var="pageNext"></c:set>
 									      </c:if>
+										  <li <c:if test='${currentPage == totalPage}'>class="disabled"</c:if>>
+										  	<a href="${urlUser}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${pageNext}" aria-label="Next">
+										  		<span aria-hidden="true">»</span>
+										  	</a>
+										  </li>
 									   </ul>
 									</c:if>
 								</nav>
@@ -92,3 +139,7 @@
 	  				</div>
   				</div>
   			</div>
+  			
+<script type="text/javascript">
+	document.getElementById("func_user").className = "current";
+</script>

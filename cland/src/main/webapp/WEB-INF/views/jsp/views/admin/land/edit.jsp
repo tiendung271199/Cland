@@ -9,7 +9,7 @@
 		<div class="content-box-large box-with-header">
 			<c:choose>
 				<c:when test="${not empty objLand}">
-					<form action="" method="post" enctype="multipart/form-data" >
+					<form action="" method="post" enctype="multipart/form-data" id="form_land_edit" >
 						<div>
 							<div class="row mb-10"></div>
 							<div class="row">
@@ -34,8 +34,9 @@
 									<div class="form-group">
 										<label>Hình ảnh</label>
 										<p><img width="200px" height="120px" alt="" src="${contextPathImage}/images/lands/${objLand.picture}" /></p>
-										<input type="file" name="image" class="btn btn-default" id="exampleInputFile1" accept="image/*">
-										<p class="help-block"><em>Định dạng: jpg, png, jpeg,...</em></p>
+										<form:errors path="landError.picture" cssStyle="color:red;font-style:italic" ></form:errors>
+										<input type="file" name="image" class="btn btn-default" id="exampleInputFile1">
+										<p class="help-block"><em>Định dạng: jpg, png</em></p>
 									</div>
 									
 									<div class="form-group">
@@ -80,3 +81,54 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function (){
+		$('#form_land_edit').validate({
+			rules:{
+				"lname":{
+					required: true,
+					minlength: 20,
+					maxlength: 100,
+				},
+				"description":{
+					required: true,
+				},
+				"address":{
+					required: true,
+					minlength: 20,
+					maxlength: 60,
+				},
+				"area":{
+					required: true,
+					digits: true,
+					min: 10,
+				}
+			},
+			messages:{
+				"lname":{
+					required: "Bắt buộc",
+					minlength: "Tên tin tối thiểu 20 ký tự",
+					maxlength: "Tên tin tối đa 100 ký tự",
+				},
+				"description":{
+					required: "Bắt buộc",
+				},
+				"address":{
+					required: "Bắt buộc",
+					minlength: "Địa chỉ tối thiểu 20 ký tự",
+					maxlength: "Địa chỉ tối đa 60 ký tự",
+				},
+				"area":{
+					required: "Bắt buộc",
+					digits: "Diện tích là số không âm",
+					min: "Diện tích tối thiểu là 10",
+				}
+			}
+		})
+	})
+</script>
+
+<script type="text/javascript">
+	document.getElementById("func_land").className = "current";
+</script>

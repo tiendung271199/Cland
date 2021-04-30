@@ -65,6 +65,11 @@
   <definition name="admin.user.edit" extends="template.admin">
     <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/user/edit.jsp" />
   </definition>
+
+  <!-- USER PROFILE -->
+  <definition name="admin.profile" extends="template.admin">
+    <put-attribute name="body" value="/WEB-INF/views/jsp/views/admin/profile.jsp" />
+  </definition>
   
   <!-- 403 -->
   <definition name="error.403" extends="template.admin">

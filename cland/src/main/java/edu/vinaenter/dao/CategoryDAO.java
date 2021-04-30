@@ -24,7 +24,25 @@ public class CategoryDAO extends AbstractDAO<Category> {
 	public List<Category> getAll2() {
 		String sql = "SELECT categories.cid,cname,COUNT(lands.cid) FROM categories "
 				+ "LEFT JOIN lands ON categories.cid = lands.cid "
-				+ "GROUP BY lands.cid ORDER BY categories.cid DESC";
+				+ "GROUP BY lands.cid ORDER BY categories.cid DESC LIMIT 5";
+		return jdbcTemplate.query(sql, new ResultSetExtractor<List<Category>>() {
+			List<Category> list = new ArrayList<Category>();
+
+			@Override
+			public List<Category> extractData(ResultSet rs) throws SQLException, DataAccessException {
+				while (rs.next()) {
+					list.add(new Category(rs.getInt("categories.cid"), rs.getString("cname"),
+							rs.getInt("COUNT(lands.cid)")));
+				}
+				return list;
+			}
+		});
+	}
+	
+	public List<Category> getCatHot() {
+		String sql = "SELECT categories.cid,cname,COUNT(lands.cid) FROM categories "
+				+ "LEFT JOIN lands ON categories.cid = lands.cid "
+				+ "GROUP BY lands.cid ORDER BY COUNT(lands.cid) DESC LIMIT 5";
 		return jdbcTemplate.query(sql, new ResultSetExtractor<List<Category>>() {
 			List<Category> list = new ArrayList<Category>();
 
@@ -85,8 +103,18 @@ public class CategoryDAO extends AbstractDAO<Category> {
 		String sql = "SELECT * FROM categories WHERE cname LIKE ? ORDER BY cid DESC";
 		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Category.class), "%" + content + "%");
 	}
+	
+	public List<Category> search(String content, int offset, int rowCount) {
+		String sql = "SELECT * FROM categories WHERE cname LIKE ? ORDER BY cid DESC LIMIT ?,?";
+		return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(Category.class), "%" + content + "%", offset, rowCount);
+	}
+	
+	public int totalRowSearch(String content) {
+		String sql = "SELECT COUNT(*) FROM categories WHERE cname LIKE ?";
+		return jdbcTemplate.queryForObject(sql, Integer.class, "%" + content + "%");
+	}
 
-	public Category checkCatName(String cname) {
+	public Category findByName(String cname) {
 		try {
 			String sql = "SELECT * FROM categories WHERE cname = ?";
 			return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(Category.class), cname);

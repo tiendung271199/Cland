@@ -7,18 +7,20 @@
 	  					<div class="panel-title ">Quản lý danh mục</div>
 		  			</div>
 				</div>
-				<hr>	
+				<hr>
 				<div class="row">
 					<div class="col-md-8">
 						<a href="${urlCat}/add" class="btn btn-success"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;Thêm</a>
 					</div>
                 	<div class="col-md-4">
-                 	 <div class="input-group form">
-                       <input type="text" id="searchContent" class="form-control" placeholder="Search...">
-                       <span class="input-group-btn">
-                         <button class="btn btn-primary" type="button" onclick="search()">Search</button>
-                       </span>
-                  	 </div>
+                	<form action="${urlCat}" method="get">
+	                 	<div class="input-group form">
+	                       <input type="text" class="form-control" name="searchContent" value="${searchContent}" placeholder="Search...">
+	                       <span class="input-group-btn">
+	                         <button class="btn btn-primary" type="submit">Search</button>
+	                       </span>
+	                  	</div>
+                  	</form>
                   	</div>
 				</div>
 				
@@ -61,17 +63,66 @@
 								<nav class="text-center" aria-label="...">
 									<c:if test="${totalPage > 0}">
 									   <ul class="pagination">
-									   	  <c:if test="${currentPage > 1}">
-									      	<li><a href="${urlCat}/${currentPage - 1}" aria-label="Previous" ><span aria-hidden="true">«</span></a></li>
+									   	  <c:set value="${currentPage - 1}" var="pagePrevious"></c:set>
+									   	  <c:if test="${currentPage == 1}">
+									   	  	<c:set value="${currentPage}" var="pagePrevious"></c:set>
 									      </c:if>
+										  <li <c:if test='${currentPage == 1}'>class="disabled"</c:if>>
+										  	<a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${pagePrevious}" aria-label="Previous" >
+										  		<span aria-hidden="true">«</span>
+										  	</a>
+										  </li>
+																				      
+									      <c:choose>
+										      <c:when test="${totalPage > 5}">
+										      	  <c:if test="${currentPage > 3 and currentPage < (totalPage - 2)}">
+										      	  	  <li><a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/1">Fi</a></li>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <c:forEach begin="${currentPage - 2}" end="${currentPage + 2}" var="page">
+												      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+												      	  	  <a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+												      	  </li>
+												      </c:forEach>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <li><a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${totalPage}">La</a></li>
+											      </c:if>
+										      	  <c:if test="${currentPage <= 3}">
+												      <c:forEach begin="1" end="5" var="page">
+												      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+												      	  	  <a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+												      	  </li>
+												      </c:forEach>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <li><a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${totalPage}">La</a></li>
+											      </c:if>
+										      	  <c:if test="${currentPage >= (totalPage - 2)}">
+										      	  	  <li><a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/1">Fi</a></li>
+												      <li><a href="javascript:void(0)">...</a></li>
+												      <c:forEach begin="${totalPage - 4}" end="${totalPage}" var="page">
+												      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+												      	  	  <a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+												      	  </li>
+												      </c:forEach>
+											      </c:if>
+										      </c:when>
+										      <c:otherwise>
+										      	  <c:forEach begin="1" end="${totalPage}" var="page">
+											      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> >
+											      	  	  <a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${page}">${page}</a>
+											      	  </li>
+											      </c:forEach>
+										      </c:otherwise>
+									      </c:choose>
 									      
-									      <c:forEach begin="1" end="${totalPage}" var="page">
-									      	  <li <c:if test='${page == currentPage}'> class="active" </c:if> ><a href="${urlCat}/${page}">${page}</a></li>
-									      </c:forEach>
-									      
-									      <c:if test="${currentPage < totalPage}">
-									      	<li><a href="${urlCat}/${currentPage + 1}" aria-label="Next"><span aria-hidden="true">»</span></a></li>
+									      <c:set value="${currentPage + 1}" var="pageNext"></c:set>
+									      <c:if test="${currentPage == totalPage}">
+									      	<c:set value="${currentPage}" var="pageNext"></c:set>
 									      </c:if>
+										  <li <c:if test='${currentPage == totalPage}'>class="disabled"</c:if>>
+										  	<a href="${urlCat}<c:if test='${not empty searchContent}'>/${searchContent}</c:if>/${pageNext}" aria-label="Next">
+										  		<span aria-hidden="true">»</span>
+										  	</a>
+										  </li>
 									   </ul>
 									</c:if>
 								</nav>
@@ -88,42 +139,5 @@
   			</div>
   			
 <script type="text/javascript">
-	function search() {
-		var searchContent = $("#searchContent").val();
-		$.ajax({
-			url: './search',
-			type: 'GET',
-			dataType: 'json',
-			// cache: false,
-			data: {
-				searchContent: searchContent
-			},
-			
-			success: function(result){
-				var body = '';
-				if (result.length > 0) {
-					result.forEach(item => {
-						console.log(item);
-						body += '<tr class="odd gradeA">';
-						body += '<td>' + item.cid + '</td>';
-						body += '<td>' + item.cname + '</td>';
-						body += '<td class="center text-center">';
-						body += '<a href="./cat/edit/' + item.cid + '" title="" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Sửa</a>';
-						body += '<a href="./cat/delete/' + item.cid + '" title="" class="btn btn-danger" onclick="return confirm(\'Bạn có chắc muốn xoá danh mục ' + item.cname + ' không?\')" ><span class="glyphicon glyphicon-trash"></span> Xóa</a>';
-						body += '</td>';
-						body += '</tr>';
-					});
-					console.log("ok");
-					$("#cat-table").html(body);
-				} else {
-					console.log("not ok");
-					$("#cat-table").html('Không tìm thấy');
-				}
-			},
-			error: function (){
-				alert('Có lỗi xảy ra');
-			}
-		});
-		return false;
-	}
+	document.getElementById("func_category").className = "current";
 </script>

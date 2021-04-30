@@ -26,6 +26,7 @@ import edu.vinaenter.model.User;
 import edu.vinaenter.service.RoleService;
 import edu.vinaenter.service.UserService;
 import edu.vinaenter.util.PageUtil;
+import edu.vinaenter.validate.UserValidator;
 
 @Controller
 @RequestMapping(URLConstant.URL_ADMIN_USER)
@@ -39,11 +40,15 @@ public class AdminUserController {
 
 	@Autowired
 	private UserService userService;
-	
+
 	@Autowired
 	private RoleService roleService;
+	
+	@Autowired
+	private UserValidator userValidator;
 
-	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}", URLConstant.URL_EMPTY + "/{search}/{page}" })
+	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}",
+			URLConstant.URL_EMPTY + "/{search}/{page}" })
 	public String index(@PathVariable(required = false) String page, @PathVariable(required = false) String search,
 			@RequestParam(required = false) String searchContent, Model model, RedirectAttributes ra) {
 		int currentPage = 1;
@@ -54,7 +59,7 @@ public class AdminUserController {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				ra.addFlashAttribute("userError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+				ra.addFlashAttribute("userError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 				return "redirect:/" + URLConstant.URL_ADMIN_USER;
 			}
 		}
@@ -66,6 +71,10 @@ public class AdminUserController {
 		int totalPage = PageUtil.getTotalPage(totalRow);
 		List<User> userList = userService.getList(offset, GlobalConstant.TOTAL_ROW);
 		if (searchContent != null) {
+			if (searchContent.equals("")) {
+				ra.addFlashAttribute("userError", messageSource.getMessage("searchError", null, Locale.getDefault()));
+				return "redirect:/" + URLConstant.URL_ADMIN_USER;
+			}
 			model.addAttribute("searchContent", searchContent);
 			totalRow = userService.totalRowSearch(searchContent);
 			totalPage = PageUtil.getTotalPage(totalRow);
@@ -88,11 +97,8 @@ public class AdminUserController {
 			Model model) {
 		model.addAttribute("roleList", roleService.getAll());
 		model.addAttribute("objUser", user);
+		userValidator.validateAddUser(user, rs);
 		if (rs.hasErrors()) {
-			return ViewNameConstant.VIEW_ADMIN_USER_ADD;
-		}
-		if (userService.checkUsername(user.getUsername()) != null) {
-			model.addAttribute("uError", messageSource.getMessage("loopError", null, Locale.getDefault()));
 			return ViewNameConstant.VIEW_ADMIN_USER_ADD;
 		}
 		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
@@ -113,7 +119,7 @@ public class AdminUserController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("userError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("userError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_ADMIN_USER;
 		}
 		User objUser = userService.findById(userId);
@@ -125,17 +131,20 @@ public class AdminUserController {
 	public String edit(@Valid @ModelAttribute("userError") User user, BindingResult rs, Model model,
 			RedirectAttributes ra) {
 		model.addAttribute("objUser", user);
-		if (rs.hasErrors()) {
-			return ViewNameConstant.VIEW_ADMIN_USER_EDIT;
-		}
-		if (userService.checkUsername(user.getUsername()) != null) {
-			User objUser = userService.checkUsername(user.getUsername());
-			if (objUser.getId() != user.getId()) {
-				model.addAttribute("uError", messageSource.getMessage("loopError", null, Locale.getDefault()));
+		User oldUser = userService.findById(user.getId());
+		userValidator.validateEditUser(user, rs);
+		userValidator.validateEditUser(user, oldUser, rs);
+		if (user.getPassword().equals("")) {
+			if (rs.hasFieldErrors("username") || rs.hasFieldErrors("fullname")) {
 				return ViewNameConstant.VIEW_ADMIN_USER_EDIT;
 			}
+			user.setPassword(oldUser.getPassword());
+		} else {
+			if (rs.hasErrors()) {
+				return ViewNameConstant.VIEW_ADMIN_USER_EDIT;
+			}
+			user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		}
-		user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 		if (userService.update(user) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("editSuccess", null, Locale.getDefault()));
 		} else {
@@ -153,13 +162,13 @@ public class AdminUserController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("userError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("userError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_ADMIN_USER;
 		}
 		if (userService.del(userId) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("deleteSuccess", null, Locale.getDefault()));
 		} else {
-			ra.addFlashAttribute("catError", messageSource.getMessage("error", null, Locale.getDefault()));
+			ra.addFlashAttribute("userError", messageSource.getMessage("error", null, Locale.getDefault()));
 		}
 		return "redirect:/" + URLConstant.URL_ADMIN_USER;
 	}

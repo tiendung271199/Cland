@@ -76,8 +76,8 @@ public class UserService implements ICRUDService<User> {
 		return false;
 	}
 	
-	public User checkUsername(String username) {
-		User user = userDAO.checkUsername(username);
+	public User findUserByUsername(String username) {
+		User user = userDAO.findUserByUsername(username);
 		return user;
 	}
 

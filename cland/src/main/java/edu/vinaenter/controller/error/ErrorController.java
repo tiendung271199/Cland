@@ -15,5 +15,10 @@ public class ErrorController {
 	public String error403() {
 		return ViewNameConstant.VIEW_ERROR_403;
 	}
-	
+
+	@GetMapping(URLConstant.URL_ERROR_STATUS_404)
+	public String error404() {
+		return ViewNameConstant.VIEW_ERROR_404;
+	}
+
 }

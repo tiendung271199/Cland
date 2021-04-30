@@ -32,8 +32,8 @@
 		<div class="clearfix single_sidebar">
 			<h2>Danh mục hot</h2>
 			<ul>
-				<c:if test="${not empty catList}">
-					<c:forEach items="${catList}" var="objCat">
+				<c:if test="${not empty catListHot}">
+					<c:forEach items="${catListHot}" var="objCat">
 						<c:set value="${objCat.cname}" var="catName" ></c:set>
 						<li><a href="${urlCat}/${stringUtil.makeSlug(catName)}/${objCat.cid}">${catName}<span>(${objCat.totalLand})</span></a></li>
 					</c:forEach>

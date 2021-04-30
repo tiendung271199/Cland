@@ -8,7 +8,7 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import org.springframework.web.servlet.DispatcherServlet;
 
 public class ApplicationInitializer implements WebApplicationInitializer {
-	
+
 	@Override
 	public void onStartup(ServletContext servletContext) {
 
@@ -22,5 +22,5 @@ public class ApplicationInitializer implements WebApplicationInitializer {
 		registration.setLoadOnStartup(1);
 		registration.addMapping("/");
 	}
-	
+
 }

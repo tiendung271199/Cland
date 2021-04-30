@@ -19,10 +19,12 @@ public class ViewNameConstant {
 	public static final String VIEW_ADMIN_USER = "admin.user";
 	public static final String VIEW_ADMIN_USER_ADD = "admin.user.add";
 	public static final String VIEW_ADMIN_USER_EDIT = "admin.user.edit";
+	public static final String VIEW_ADMIN_PROFILE = "admin.profile";
 
 	public static final String VIEW_AUTH_LOGIN = "auth.login";
 	public static final String VIEW_AUTH_SIGNUP = "auth.signup";
 
 	public static final String VIEW_ERROR_403 = "error.403";
+	public static final String VIEW_ERROR_404 = "jsp/views/error/404";
 	
 }

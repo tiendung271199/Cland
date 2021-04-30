@@ -41,22 +41,26 @@ public class AdminContactController {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				ra.addFlashAttribute("contactError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+				ra.addFlashAttribute("contactError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 				return "redirect:/" + URLConstant.URL_ADMIN_CONTACT;
 			}
 		}
 		if (search != null) {
 			searchContent = search;
 		}
-		int offset = PageUtil.getOffset(currentPage);
+		int offset = PageUtil.getOffsetTest(currentPage);
 		int totalRow = contactService.totalRow();
-		int totalPage = PageUtil.getTotalPage(totalRow);
-		List<Contact> contactList = contactService.getList(offset, GlobalConstant.TOTAL_ROW);
+		int totalPage = PageUtil.getTotalPageTest(totalRow);
+		List<Contact> contactList = contactService.getList(offset, GlobalConstant.TOTAL_ROW_TEST);
 		if (searchContent != null) {
+			if (searchContent.equals("")) {
+				ra.addFlashAttribute("contactError", messageSource.getMessage("searchError", null, Locale.getDefault()));
+				return "redirect:/" + URLConstant.URL_ADMIN_CONTACT;
+			}
 			model.addAttribute("searchContent", searchContent);
 			totalRow = contactService.totalRowSearch(searchContent);
-			totalPage = PageUtil.getTotalPage(totalRow);
-			contactList = contactService.search(searchContent, offset, GlobalConstant.TOTAL_ROW);
+			totalPage = PageUtil.getTotalPageTest(totalRow);
+			contactList = contactService.search(searchContent, offset, GlobalConstant.TOTAL_ROW_TEST);
 		}
 		model.addAttribute("currentPage", currentPage);
 		model.addAttribute("totalPage", totalPage);
@@ -73,7 +77,7 @@ public class AdminContactController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("contactError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("contactError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_ADMIN_CONTACT;
 		}
 		if (contactService.del(contactId) > 0) {

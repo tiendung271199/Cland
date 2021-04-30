@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.vinaenter.constant.GlobalConstant;
@@ -23,6 +24,7 @@ import edu.vinaenter.constant.ViewNameConstant;
 import edu.vinaenter.model.Category;
 import edu.vinaenter.service.CategoryService;
 import edu.vinaenter.util.PageUtil;
+import edu.vinaenter.validate.CategoryValidator;
 
 @Controller
 @RequestMapping(URLConstant.URL_ADMIN_CAT)
@@ -33,9 +35,13 @@ public class AdminCatController {
 
 	@Autowired
 	private CategoryService categoryService;
+	
+	@Autowired
+	private CategoryValidator categoryValidator;
 
-	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}" })
-	public String index(@PathVariable(required = false) String page, Model model, RedirectAttributes ra) {
+	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}",  URLConstant.URL_EMPTY + "/{search}/{page}" })
+	public String index(@PathVariable(required = false) String page, @PathVariable(required = false) String search,
+			@RequestParam(required = false) String searchContent, Model model, RedirectAttributes ra) {
 		int currentPage = 1;
 		if (page != null) {
 			try {
@@ -44,17 +50,27 @@ public class AdminCatController {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				ra.addFlashAttribute("catError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+				ra.addFlashAttribute("catError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 				return "redirect:/" + URLConstant.URL_ADMIN_CAT;
 			}
 		}
 		int offset = PageUtil.getOffset(currentPage);
 		int totalRow = categoryService.totalRow();
 		int totalPage = PageUtil.getTotalPage(totalRow);
+		List<Category> catList = categoryService.getList(offset, GlobalConstant.TOTAL_ROW);
+		if (searchContent != null) {
+			if (searchContent.equals("")) {
+				ra.addFlashAttribute("catError", messageSource.getMessage("searchError", null, Locale.getDefault()));
+				return "redirect:/" + URLConstant.URL_ADMIN_CAT;
+			}
+			model.addAttribute("searchContent", searchContent);
+			totalRow = categoryService.totalRowSearch(searchContent);
+			totalPage = PageUtil.getTotalPage(totalRow);
+			catList = categoryService.search(searchContent, offset, GlobalConstant.TOTAL_ROW);
+		}
+		model.addAttribute("catList", catList);
 		model.addAttribute("currentPage", currentPage);
 		model.addAttribute("totalPage", totalPage);
-		List<Category> catList = categoryService.getList(offset, GlobalConstant.TOTAL_ROW);
-		model.addAttribute("catList", catList);
 		return ViewNameConstant.VIEW_ADMIN_CAT;
 	}
 
@@ -64,14 +80,11 @@ public class AdminCatController {
 	}
 
 	@PostMapping(URLConstant.URL_ADMIN_ADD)
-	public String add(@Valid @ModelAttribute("category") Category category, BindingResult rs, RedirectAttributes ra,
+	public String add(@Valid @ModelAttribute("catError") Category category, BindingResult rs, RedirectAttributes ra,
 			Model model) {
 		model.addAttribute("objCat", category);
+		categoryValidator.validateAddCat(category, rs);
 		if (rs.hasErrors()) {
-			return ViewNameConstant.VIEW_ADMIN_CAT_ADD;
-		}
-		if (categoryService.checkCatName(category.getCname()) != null) {
-			model.addAttribute("cError", messageSource.getMessage("loopCatError", null, Locale.getDefault()));
 			return ViewNameConstant.VIEW_ADMIN_CAT_ADD;
 		}
 		if (categoryService.save(category) > 0) {
@@ -91,7 +104,7 @@ public class AdminCatController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("catError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("catError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_ADMIN_CAT;
 		}
 		Category objCat = categoryService.findById(catId);
@@ -100,18 +113,12 @@ public class AdminCatController {
 	}
 
 	@PostMapping(URLConstant.URL_ADMIN_EDIT_CAT)
-	public String edit(@Valid @ModelAttribute("cat") Category category, BindingResult rs, Model model,
+	public String edit(@Valid @ModelAttribute("catError") Category category, BindingResult rs, Model model,
 			RedirectAttributes ra) {
 		model.addAttribute("objCat", category);
+		categoryValidator.validateEditCat(category, rs);
 		if (rs.hasErrors()) {
 			return ViewNameConstant.VIEW_ADMIN_CAT_EDIT;
-		}
-		if (categoryService.checkCatName(category.getCname()) != null) {
-			Category objCat = categoryService.checkCatName(category.getCname());
-			if (objCat.getCid() != category.getCid()) {
-				model.addAttribute("cError", messageSource.getMessage("loopCatError", null, Locale.getDefault()));
-				return ViewNameConstant.VIEW_ADMIN_CAT_EDIT;
-			}
 		}
 		if (categoryService.update(category) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("editSuccess", null, Locale.getDefault()));
@@ -130,7 +137,7 @@ public class AdminCatController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("catError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("catError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_ADMIN_CAT;
 		}
 		if (categoryService.del(catId) > 0) {

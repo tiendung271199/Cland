@@ -21,12 +21,12 @@ public class User {
 	@Size(min = 6, max = 30)
 	private String fullname;
 	
-	private String rememberToken;
-	
 	@NotEmpty
 	@Size(min = 6, max = 16)
 	private String password;
 	
 	private int roleId;
+	
+	private int enabled;
 	
 }

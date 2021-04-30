@@ -53,9 +53,16 @@ public class CategoryService implements ICRUDService<Category> {
 		return list;
 	}
 	
-	public Category checkCatName(String cname) {
-		Category category = categoryDAO.checkCatName(cname);
-		return category;
+	public List<Category> search(String content, int offset, int rowCount) {
+		return categoryDAO.search(content, offset, rowCount);
+	}
+	
+	public int totalRowSearch(String content) {
+		return categoryDAO.totalRowSearch(content);
+	}
+	
+	public Category findByName(String cname) {
+		return categoryDAO.findByName(cname);
 	}
 
 	@Override
@@ -71,6 +78,10 @@ public class CategoryService implements ICRUDService<Category> {
 	
 	public int totalRow() {
 		return categoryDAO.totalRow();
+	}
+	
+	public List<Category> getCatHot() {
+		return categoryDAO.getCatHot();
 	}
 
 }

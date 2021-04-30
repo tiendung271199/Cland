@@ -14,12 +14,6 @@
 							<div class="row mb-10"></div>
 							<div class="row">
 								<div class="col-sm-6">
-									<c:if test="${not empty uError}">
-										<div class="alert alert-danger" role="alert">
-										    ${uError}
-										</div>
-									</c:if>
-								
 									<div class="form-group">
 										<label for="username">Username</label>
 										<form:errors path="userError.username" cssStyle="color:red;font-style:italic" ></form:errors>
@@ -74,7 +68,6 @@
 					maxlength: 30,
 				},
 				"password":{
-					required: true,
 					minlength: 6,
 					maxlength: 16,
 				}
@@ -91,11 +84,14 @@
 					maxlength: "Tên danh mục tối đa 30 ký tự",
 				},
 				"password":{
-					required: "Bắt buộc",
 					minlength: "Tên danh mục tối thiểu 6 ký tự",
 					maxlength: "Tên danh mục tối đa 16 ký tự",
 				}
 			}
 		})
 	})
+</script>
+
+<script type="text/javascript">
+	document.getElementById("func_user").className = "current";
 </script>

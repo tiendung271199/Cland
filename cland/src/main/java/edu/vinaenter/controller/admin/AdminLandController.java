@@ -28,6 +28,7 @@ import edu.vinaenter.service.CategoryService;
 import edu.vinaenter.service.LandService;
 import edu.vinaenter.util.FileUtil;
 import edu.vinaenter.util.PageUtil;
+import edu.vinaenter.validate.FileValidator;
 
 @Controller
 @RequestMapping(URLConstant.URL_ADMIN_LAND)
@@ -42,7 +43,11 @@ public class AdminLandController {
 	@Autowired
 	private LandService landService;
 
-	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}", URLConstant.URL_EMPTY + "/{search}/{page}" })
+	@Autowired
+	private FileValidator fileValidator;
+
+	@GetMapping({ URLConstant.URL_EMPTY, URLConstant.URL_EMPTY + "/{page}",
+			URLConstant.URL_EMPTY + "/{search}/{page}" })
 	public String index(@PathVariable(required = false) String page, @PathVariable(required = false) String search,
 			@RequestParam(required = false) String searchContent, Model model, RedirectAttributes ra) {
 		int currentPage = 1;
@@ -53,7 +58,7 @@ public class AdminLandController {
 					throw new Exception();
 				}
 			} catch (Exception e) {
-				ra.addFlashAttribute("landError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+				ra.addFlashAttribute("landError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 				return "redirect:/" + URLConstant.URL_ADMIN_LAND;
 			}
 		}
@@ -65,6 +70,10 @@ public class AdminLandController {
 		int totalPage = PageUtil.getTotalPage(totalRow);
 		List<Land> landList = landService.getList(offset, GlobalConstant.TOTAL_ROW);
 		if (searchContent != null) {
+			if (searchContent.equals("")) {
+				ra.addFlashAttribute("landError", messageSource.getMessage("searchError", null, Locale.getDefault()));
+				return "redirect:/" + URLConstant.URL_ADMIN_LAND;
+			}
 			model.addAttribute("searchContent", searchContent);
 			totalRow = landService.totalRowSearch(searchContent);
 			totalPage = PageUtil.getTotalPage(totalRow);
@@ -89,14 +98,11 @@ public class AdminLandController {
 		List<Category> catList = categoryService.getAll();
 		model.addAttribute("catList", catList);
 		model.addAttribute("objLand", land);
+		fileValidator.validateAddPicture(rs, multipartFile);
 		if (rs.hasErrors()) {
 			return ViewNameConstant.VIEW_ADMIN_LAND_ADD;
 		}
 		String fileName = FileUtil.uploadFile(multipartFile);
-		if (fileName.equals(GlobalConstant.EMPTY)) {
-			model.addAttribute("lError", messageSource.getMessage("uploadImageError", null, Locale.getDefault()));
-			return ViewNameConstant.VIEW_ADMIN_LAND_ADD;
-		}
 		land.setPicture(fileName);
 		if (landService.save(land) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("addSuccess", null, Locale.getDefault()));
@@ -120,7 +126,7 @@ public class AdminLandController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("landError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("landError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_ADMIN_LAND;
 		}
 		Land land = landService.findById(landId);
@@ -137,11 +143,13 @@ public class AdminLandController {
 		Land objLand = landService.findById(land.getLid());
 		land.setPicture(objLand.getPicture());
 		model.addAttribute("objLand", land);
+		fileValidator.validateUpdatePicture(rs, multipartFile);
 		if (rs.hasErrors()) {
 			return ViewNameConstant.VIEW_ADMIN_LAND_EDIT;
 		}
-		String fileName = FileUtil.uploadFile(multipartFile);
+		String fileName = multipartFile.getOriginalFilename();
 		if (!fileName.equals(GlobalConstant.EMPTY)) {
+			fileName = FileUtil.uploadFile(multipartFile);
 			land.setPicture(fileName);
 			if (FileUtil.deleteFile(objLand.getPicture())) {
 				System.out.println();
@@ -150,8 +158,10 @@ public class AdminLandController {
 		if (landService.update(land) > 0) {
 			ra.addFlashAttribute("success", messageSource.getMessage("editSuccess", null, Locale.getDefault()));
 		} else {
-			if (FileUtil.deleteFile(fileName)) {
-				System.out.println();
+			if (!fileName.equals(GlobalConstant.EMPTY)) {
+				if (FileUtil.deleteFile(fileName)) {
+					System.out.println();
+				}
 			}
 			ra.addFlashAttribute("landError", messageSource.getMessage("error", null, Locale.getDefault()));
 		}
@@ -167,7 +177,7 @@ public class AdminLandController {
 				throw new Exception();
 			}
 		} catch (Exception e) {
-			ra.addFlashAttribute("landError", messageSource.getMessage("pageError", null, Locale.getDefault()));
+			ra.addFlashAttribute("landError", messageSource.getMessage("urlError", null, Locale.getDefault()));
 			return "redirect:/" + URLConstant.URL_ADMIN_LAND;
 		}
 		Land objLand = landService.findById(landId);
